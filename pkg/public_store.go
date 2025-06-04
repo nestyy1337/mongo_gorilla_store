@@ -1,4 +1,4 @@
-package mongo_gorilla_store
+package mongogorillastore
 
 import (
 	mongoStore "github.com/nestyy1337/mongogorillastore/internal/pkg"
