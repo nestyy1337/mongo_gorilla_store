@@ -2,12 +2,14 @@ package pkg
 
 import (
 	"context"
-	"encoding/base64"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"maps"
 	"net/http"
 	"time"
+	"unicode/utf8"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -127,9 +129,15 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 	}
 
 	if session.ID == "" {
-		rawKey := securecookie.GenerateRandomKey(32)
-		session.ID = base64.RawURLEncoding.EncodeToString(rawKey)
+		rawKey := make([]byte, 16)
+		if _, err := rand.Read(rawKey); err != nil {
+			return err
+		}
+		session.ID = hex.EncodeToString(rawKey)
 		session.IsNew = true
+	}
+	if !utf8.ValidString(session.ID) {
+		return fmt.Errorf("invalid UTF-8 session ID: %q", session.ID)
 	}
 
 	flat := make(map[string]any, len(session.Values))
