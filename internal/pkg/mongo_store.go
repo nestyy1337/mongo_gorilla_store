@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"context"
-	"encoding/hex"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"maps"
@@ -128,7 +128,7 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 
 	if session.ID == "" {
 		rawKey := securecookie.GenerateRandomKey(32)
-		session.ID = hex.EncodeToString(rawKey)
+		session.ID = base64.RawURLEncoding.EncodeToString(rawKey)
 		session.IsNew = true
 	}
 
