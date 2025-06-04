@@ -2,7 +2,9 @@ package pkg
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"maps"
 	"net/http"
 	"time"
@@ -124,7 +126,8 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 	}
 
 	if session.ID == "" {
-		session.ID = string(securecookie.GenerateRandomKey(32))
+		rawKey := securecookie.GenerateRandomKey(32)
+		session.ID = hex.EncodeToString(rawKey)
 		session.IsNew = true
 	}
 
@@ -149,6 +152,8 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 			"modified": now,
 		},
 	}
+	fmt.Println("Session ID:", session.ID)
+	fmt.Println("Session Data:", string(dataBytes))
 	opts := options.Update().SetUpsert(true)
 	if _, err := m.coll.UpdateByID(ctx, session.ID, upd, opts); err != nil {
 		return err
