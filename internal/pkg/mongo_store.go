@@ -3,7 +3,7 @@ package pkg
 import (
 	"context"
 	"crypto/rand"
-	"encoding/hex"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"maps"
@@ -133,7 +133,7 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 		if _, err := rand.Read(rawKey); err != nil {
 			return err
 		}
-		session.ID = hex.EncodeToString(rawKey)
+		session.ID = base64.RawURLEncoding.EncodeToString(rawKey)
 		session.IsNew = true
 	}
 
