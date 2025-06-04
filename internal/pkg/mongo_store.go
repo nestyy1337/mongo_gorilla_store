@@ -136,8 +136,9 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 		session.ID = hex.EncodeToString(rawKey)
 		session.IsNew = true
 	}
+
 	if !utf8.ValidString(session.ID) {
-		return fmt.Errorf("invalid UTF-8 session ID: %q", session.ID)
+		return fmt.Errorf("invalid UTF-8 session ID")
 	}
 
 	flat := make(map[string]any, len(session.Values))
@@ -149,14 +150,10 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 		flat[k] = rawVal
 	}
 
-	fmt.Println("Saving session:", session.ID, "with values:", flat)
-
 	dataBytes, err := json.Marshal(flat)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("Session data JSON:", string(dataBytes))
 
 	now := time.Now().UTC()
 	upd := bson.M{
@@ -165,8 +162,6 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 			"modified": now,
 		},
 	}
-	fmt.Println("Session ID:", session.ID)
-	fmt.Println("Session Data:", string(dataBytes))
 
 	opts := options.Update().SetUpsert(true)
 	if _, err := m.coll.UpdateByID(ctx, session.ID, upd, opts); err != nil {
@@ -177,6 +172,7 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 	if err != nil {
 		return err
 	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     m.cookieName,
 		Value:    encoded,
