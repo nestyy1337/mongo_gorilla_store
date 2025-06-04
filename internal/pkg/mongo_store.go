@@ -89,6 +89,7 @@ func (m *MongoStore) Get(r *http.Request, name string) (*sessions.Session, error
 	for k, v := range flat {
 		maps.Copy(values, map[any]any{k: v})
 	}
+
 	session.ID = sessionID
 	session.Values = values
 	session.IsNew = false
@@ -154,6 +155,7 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 	}
 	fmt.Println("Session ID:", session.ID)
 	fmt.Println("Session Data:", string(dataBytes))
+
 	opts := options.Update().SetUpsert(true)
 	if _, err := m.coll.UpdateByID(ctx, session.ID, upd, opts); err != nil {
 		return err
