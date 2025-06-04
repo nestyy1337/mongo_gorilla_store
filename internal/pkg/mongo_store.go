@@ -141,10 +141,14 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 		flat[k] = rawVal
 	}
 
+	fmt.Println("Saving session:", session.ID, "with values:", flat)
+
 	dataBytes, err := json.Marshal(flat)
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("Session data JSON:", string(dataBytes))
 
 	now := time.Now().UTC()
 	upd := bson.M{
