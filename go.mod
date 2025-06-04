@@ -1,4 +1,4 @@
-module github.com/nestyy1337/mongo_gorilla_store
+module github.com/nestyy1337/mongogorillastore
 
 go 1.24.3
 
