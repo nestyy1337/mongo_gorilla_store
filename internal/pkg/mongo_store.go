@@ -129,10 +129,7 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 	}
 
 	if session.ID == "" {
-		rawKey := make([]byte, 16)
-		if _, err := rand.Read(rawKey); err != nil {
-			return err
-		}
+		rawKey := securecookie.GenerateRandomKey(32)
 		session.ID = base64.RawURLEncoding.EncodeToString(rawKey)
 		session.IsNew = true
 	}
