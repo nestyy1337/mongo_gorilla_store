@@ -138,7 +138,7 @@ func (m *MongoStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 	}
 
 	if !utf8.ValidString(session.ID) {
-		return fmt.Errorf("invalid UTF-8 session ID")
+		return fmt.Errorf("invalid UTF-8 session ID: %v", session.ID)
 	}
 
 	flat := make(map[string]any, len(session.Values))
